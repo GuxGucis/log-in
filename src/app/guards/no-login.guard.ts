@@ -1,29 +1,30 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
-import { UtilService } from '../services/util.service';
+// import { Injectable } from '@angular/core';
+// import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
+// import { UtilService } from '../services/util.service';
+// import { LoginPage } from '../pages/login/login.page';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class NoLoginGuard implements CanActivate {
+// @Injectable({
+//   providedIn: 'root'
+// })
+// export class NoLoginGuard implements CanActivate {
 
-  constructor(
-    private utilsSvc: UtilService,
-  ){}
+//   constructor(
+//     private utilsSvc: UtilService,
+//     private loginPage:  LoginPage
+//   ){}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+//   async canActivate(
+//     route: ActivatedRouteSnapshot,
+//     state: RouterStateSnapshot
+//   ): Promise<boolean> {
         
-      if(this.utilsSvc.getElementInLocalStorage('user') == null){
-        return true;
-      }else{
-        this.utilsSvc.routerLink('/home');
-        return false;
-      }
+//       if(await this.loginPage.LogUser() == null){
+//         return true;
+//       }else{
+//         this.utilsSvc.routerLink('/home');
+//         return false;
+//       }
 
-    }
+//     }
   
-}
+// }

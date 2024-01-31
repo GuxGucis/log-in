@@ -8,7 +8,7 @@ import { UtilService } from 'src/app/services/util.service';
 })
 export class HomePage {
 
-  user = this.utilsSvc.getElementInLocalStorage('user').userName
+  // user = this.utilsSvc.getElementInLocalStorage('user').userName
 
   constructor(
     private utilsSvc: UtilService

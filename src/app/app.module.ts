@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -6,9 +6,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { SQLiteService } from './services/sqlite.service';
-import { StorageService } from './services/storage.service';
-import { DbnameVersionService } from './services/dbname-version.service';
+import { MySqlite } from './services/mysqlite.service';
+import { LoginPage } from './pages/login/login.page';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,10 +18,12 @@ import { DbnameVersionService } from './services/dbname-version.service';
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    SQLiteService,
-    StorageService,
-    DbnameVersionService
+    MySqlite,
+    LoginPage
   ],
   bootstrap: [AppComponent],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ]
 })
 export class AppModule {}

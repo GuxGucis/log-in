@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+ import { Injectable } from '@angular/core';
 
  import { SQLiteService } from './sqlite.service';
  import { StorageService } from './storage.service';
@@ -18,10 +18,11 @@ import { Injectable } from '@angular/core';
 
      async initializeApp() {
          await this.sqliteService.initializePlugin().then(async (ret) => {
+            
              this.platform = this.sqliteService.platform;
              try {
                  if( this.sqliteService.platform === 'web') {
-                     await this.sqliteService.initWebStore();
+                    await this.sqliteService.initWebStore();
                  }
                  // Initialize the myuserdb database
                  const DB_USERS = 'myuserdb'

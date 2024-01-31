@@ -21,12 +21,14 @@ export class SQLiteService {
      * Plugin Initialization
      */
     async initializePlugin(): Promise<boolean> {
-            this.platform = Capacitor.getPlatform();
-            if(this.platform === 'ios' || this.platform === 'android') this.native = true;
-            this.sqlitePlugin = CapacitorSQLite;
-            this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
-            this.isService = true;
-            return true;
+        return new Promise(resolve => {
+        this.platform = Capacitor.getPlatform();
+        if (this.platform === 'ios' || this.platform === 'android') this.native = true;
+        this.sqlitePlugin = CapacitorSQLite;
+        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
+        this.isService = true;
+        resolve(true);
+        });
     }
 
     async initWebStore(): Promise<void> {

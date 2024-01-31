@@ -7,15 +7,15 @@
 
     <ion-col sizeLg="4" sizeMd="6" sizeSm="8" size="12">
       <ion-card>
-        <form [formGroup]="form" (keyup.enter)="Submit()" (ngSubmit)="Submit()">
+        <form [formGroup]="logForm" (keyup.enter)="Submit()" (ngSubmit)="Submit()">
           <div>
 
             <div class="input">
               <ion-label class="prompt-text" position="stacked">Nombre de usuario</ion-label>
               <br><br>
               <ion-input type="text" class="input-field" formControlName="userName"></ion-input>
-              <div class="validators" *ngIf="form.controls.userName.errors && form.controls.userName.dirty">
-                <div *ngIf="form.controls.userName.errors?.['required']">Ingresa el nombre de usuario</div>
+              <div class="validators" *ngIf="logForm.controls.userName.errors && logForm.controls.userName.dirty">
+                <div *ngIf="logForm.controls.userName.errors?.['required']">Ingresa el nombre de usuario</div>
               </div>
             </div>
 
@@ -23,12 +23,12 @@
               <ion-label class="prompt-text" position="stacked">Clave</ion-label>
               <br><br>
               <ion-input type="password" class="input-field" formControlName="password"></ion-input>
-              <div class="validators" *ngIf="form.controls.password.errors && form.controls.password.dirty">
-                <div *ngIf="form.controls.password.errors?.['required']">Ingresa la contraseña</div>
+              <div class="validators" *ngIf="logForm.controls.password.errors && logForm.controls.password.dirty">
+                <div *ngIf="logForm.controls.password.errors?.['required']">Ingresa la contraseña</div>
               </div> 
             </div>
 
-            <ion-button [disabled]="form.invalid" type="submit">Ingresar</ion-button>
+            <ion-button [disabled]="logForm.invalid" type="submit">Ingresar</ion-button>
           
           </div>
         </form>
