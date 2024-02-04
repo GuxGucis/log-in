@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { HeaderComponent } from './header/header.component';
+import { PipesModule } from '../pipes/pipes.module';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -11,12 +13,14 @@ import { HeaderComponent } from './header/header.component';
     HeaderComponent
   ],
   exports:[
-    HeaderComponent,
+    HeaderComponent
   ],
   imports: [
     CommonModule,
     RouterModule,
-    IonicModule
+    IonicModule,
+    PipesModule,
+    FormsModule,
   ]
 })
 export class ComponentsModule { }

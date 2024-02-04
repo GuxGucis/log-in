@@ -1,1 +1,6 @@
-<app-header type="home" title="Home" label="Hola  Bienvenido/a"></app-header>
+<app-header type="home" title="Home" label="{{'Welcome' | translate | async}}: {{userName}}"></app-header>
+
+<ion-button (click)="singOut()" shape="round">
+    Cerrar Sesion
+    <ion-icon slot="end" name="log-out-outline"></ion-icon>
+</ion-button>

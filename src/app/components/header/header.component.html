@@ -1,7 +1,21 @@
 <title *ngIf="title">{{title}}</title>
 
-<ion-header *ngIf="type !== 'login'" class="ion-no-border">
+<ion-header class="ion-no-border">
     <ion-toolbar>
-        <ion-title class="ion-text-center">{{label}}</ion-title>
+
+      <ion-title *ngIf="type !== 'login'" class="ion-text-center">{{label}}</ion-title>
+      <ion-back-button *ngIf="backButton" [defaultHref]="backButton" slot="start" ></ion-back-button>
+
+      <!-- Language Selection Dropdown -->
+      <ion-buttons *ngIf="translation !== false" slot="end">
+        <ion-item lines="none">
+          <ion-select [(ngModel)]="selectedLanguage" (ionChange)="switchLanguage($event.detail.value)">
+            <ion-select-option value="es">Español</ion-select-option>
+            <ion-select-option value="en">English</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-buttons>
+
       </ion-toolbar>    
 </ion-header>
+

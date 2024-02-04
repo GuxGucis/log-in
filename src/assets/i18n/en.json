@@ -1,0 +1,9 @@
+{
+    "Welcome": "¡Hi! Welcome",
+    "UserName": "User name",
+    "Password": "Password",
+    "Enter": "Enter",
+    "UserNameError1": "Please, enter a user name",
+    "PasswordError1": "Please, enter the Password",
+    "Register": "Register"
+}

@@ -1,0 +1,45 @@
+<ion-content>
+    
+  <app-header title="Sing In" type="login" backButton="/login"></app-header>
+
+  <ion-row>
+    <ion-col sizeLg="4" sizeMd="3" sizeSm="2" size="12"></ion-col>
+
+    <ion-col sizeLg="4" sizeMd="6" sizeSm="8" size="12">
+      <ion-card>
+        <form [formGroup]="singForm" (keyup.enter)="Submit()" (ngSubmit)="Submit()">
+          <div>
+
+            <div class="input">
+              <ion-label class="prompt-text" position="stacked">{{ 'UserName' | translate | async }}</ion-label>
+              <br><br>
+              <ion-input type="text" class="input-field" formControlName="userName"></ion-input>
+              <div class="validators" *ngIf="singForm.controls.userName.errors && singForm.controls.userName.dirty">
+                <div *ngIf="singForm.controls.userName.errors?.['required']">{{ 'UserNameError1' |  translate | async }}</div>  
+              </div>
+            </div>
+
+            <div class="input">
+              <ion-label class="prompt-text" position="stacked">{{ 'Password' | translate | async }}</ion-label>
+              <br><br>
+              <ion-input type="password" class="input-field" formControlName="password"></ion-input>
+              <div class="validators" *ngIf="singForm.controls.password.errors && singForm.controls.password.dirty">
+                <div *ngIf="singForm.controls .password.errors?.['required']">{{ 'PasswordError1' | translate | async }}</div>
+                <div *ngIf="singForm.get('password')?.errors?.['minLength']">{{ 'PasswordError2' | translate | async }}</div>
+                <div *ngIf="singForm.get('password')?.errors?.['uppercaseRequired']">{{ 'PasswordError3' | translate | async }}</div>
+                <div *ngIf="singForm.get('password')?.errors?.['lowercaseRequired']">{{ 'PasswordError4' | translate | async }}</div>
+                <div *ngIf="singForm.get('password')?.errors?.['numericRequired']">{{ 'PasswordError5' | translate | async }}</div>
+                <div *ngIf="singForm.get('password')?.errors?.['specialCharRequired']">{{ 'PasswordError6' | translate | async }}</div>
+              </div> 
+            </div>
+
+            <ion-button [disabled]="singForm.invalid" type="submit">{{ 'Enter' | translate | async }}</ion-button>
+          
+          </div>
+        </form>
+      </ion-card>
+    </ion-col>
+
+    <ion-col sizeLg="4" sizeMd="3" sizeSm="2" size="12"></ion-col>
+  </ion-row>
+</ion-content>

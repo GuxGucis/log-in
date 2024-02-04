@@ -1,6 +1,10 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable} from '@angular/core';
 import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { User } from '../interfaces/user.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Platform, ToastController } from '@ionic/angular';
+import { HashService } from './hash.service';
+import { UtilService } from './util.service';
 
 const DB_USERS = 'UserDB'
 
@@ -11,14 +15,26 @@ export class MySqlite {
     sqlitePlugin!: CapacitorSQLitePlugin;
     sqliteConnection!: SQLiteConnection;
     private db!: SQLiteDBConnection;
-    users!: User[];
 
+    private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    private listaUsuarios = new BehaviorSubject<User[]>([]);
 
-    constructor() {}
+    private lastUser: User | null = null;
+    public LoggedUser = false;
+
+    constructor(
+        private platform: Platform, 
+        public toastController: ToastController,
+        private hashSvc: HashService,
+        private utilsSvc: UtilService
+    ) {}
+
+    // Función que inicializa la base de datos
 
     async initializeDB() {
 
         try{
+            await this.platform.ready();
         
             this.sqlitePlugin = CapacitorSQLite;
             this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
@@ -28,15 +44,7 @@ export class MySqlite {
             
             await this.db.open();
 
-            const script = `
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    userName TEXT NOT NULL
-                );
-            `;
-
-            await this.db.execute(script);
-            this.loadUsers();
+            await this.createTables();
 
             await this.sqliteConnection.saveToStore(DB_USERS);
 
@@ -49,62 +57,139 @@ export class MySqlite {
         }
     }
 
-    getUsers(){
-        return this.users;
+    // Función que crea las tablas correspondientes a los usuarios
+
+    async createTables(){
+
+        try {
+            await this.db.execute(`CREATE TABLE IF NOT EXISTS Usuarios (
+                                    id INTEGER PRIMARY KEY autoincrement, 
+                                    userName TEXT UNIQUE NOT NULL,
+                                    password TEXT NOT NULL
+                                    );`);
+            
+            this.fetchUsuarios();
+            this.isDBReady.next(true);
+            return true;
+
+        } catch (error) {
+            console.error('Error al crear las tablas:', error);
+            return false;
+        }
+
     }
 
-    async loadUsers() {
-        try {
-            const result = await this.db.query('SELECT * FROM users;');
-            console.log('-', result.values);
-            if (result.values) {
-                this.users = (result.values as User[]);
+    // Busca y devuelve si exite el usuario por UserName o devuelve False
+
+    async getUserByUserName(userName: string){
+        try{
+
+            const result = await this.db.query(`SELECT * FROM Usuarios WHERE userName = ?`, [userName]);
+            if (result.values && result.values.length > 0) {
+
+                const user: User = {
+                    id: result.values[0].id,
+                    userName: result.values[0].userName,
+                    password: result.values[0].password, // Be cautious with password handling
+                };
+                return user;
+
             } else {
-                this.users = [];
+                return false;
             }
-        } catch (error) {
-            console.error('Error loading users:', error);
-            this.users = [];
+
+        }catch(error){
+            console.log('Error al buscar el usuario');
+            return false;
         }
     }
-    
 
-    async addUser(user: User): Promise<boolean> {
+    // Devulve si el usuario esta logeado (existe en la BBDD)
+    
+    async isUserLoggedIn(userName: string, rawPassword: string): Promise<boolean | string> {
         try {
-            console.log('Insertar usuario: ', user)
-            await this.db.query(`INSERT INTO users (userName) VALUES (?)`, [user.userName]);
-            this.loadUsers();
-            return true; // Success in adding the user
+
+            const user = await this.getUserByUserName(userName)
+
+            if( user != false){
+                // User Match
+                const hashedPassword = this.hashSvc.HashingPassword(rawPassword); // Hash the password provided during login
+                
+                if (user.password === hashedPassword) {
+                    // Passwords match
+                    this.LoggedUser = true;
+                    return true;
+
+                } else {
+                    // Passwords do not match
+                    this.utilsSvc.presentToast({
+                        message: "La contraseña no es correcta",
+                        duration: 5000, //milisegundos
+                        color: 'warning',
+                        icon: 'alert-circle-outline'
+                      })
+                    console.log('La contraseña no es correcta');
+                    return false;
+                }
+
+            }else{
+                // User do not match
+                this.utilsSvc.presentToast({
+                    message: "No se ha encontrado el usuario",
+                    duration: 5000, //milisegundos
+                    color: 'warning',
+                    icon: 'alert-circle-outline'
+                  })
+                console.log('No se ha encontrado el usuario');
+                return false;
+            }
+
         } catch (error) {
-            console.error('Error al agregar usuario:', error);
+            this.utilsSvc.presentToast({
+                message: "Error",
+                duration: 5000, //milisegundos
+                color: 'warning',
+                icon: 'alert-circle-outline'
+              })
+            console.error('Error checking login status:', error);
+            return false; 
+        }
+    }
+
+    //  Devuelve un array con todos los usuarios guardados en la BD
+
+    async fetchUsuarios() {
+        try {
+            const result = await this.db.query(`SELECT * FROM Usuarios`);
+            let items = [];
+            if(result.values != undefined){
+                for (let i = 0; i < result.values.length; i++) {
+                    items.push(result.values[i]);
+                }
+                this.listaUsuarios.next(items);
+                const users = this.listaUsuarios.getValue();
+                this.lastUser = users.length > 0 ? users[users.length - 1] : null;
+                return true;
+            }else{
+                return  false;
+            }
+
+        } catch (error) {
+            console.error('Error al hacer fetch:', error);
             return false; // Error in adding the user
         }
-        
-    } 
+    }
 
-    // async getUserByUserName(userName: string): Promise<User | null> {
-    //     try {
-    //         // Prepare the SELECT query to find the user by userName
-    //         const query = `SELECT * FROM users WHERE userName = ?`;
-    //         const result = await this.db.query(query, [userName]);
+    // Devuelve la Base de Datos
+
+    getDB(): SQLiteDBConnection{
+        return this.db;
+    }
+
+    // Devuelve  el ultimo usuario agregado a la lista o nulo si no hay ninguno
     
-    //         if (result.values && result.values.length > 0) {
-    //             // Assuming the result.values contains user data
-    //             // Convert the result to a User object
-    //             const user = {
-    //                 id: result.values[0].id,
-    //                 userName: result.values[0].userName,
-    //                 // Include other user fields if available
-    //             };
-    //             return user;
-    //         } else{
-    //             // No user found with the given userName
-    //             return null;
-    //         }
-    //     } catch (error) {
-    //         console.error('Error al obtener usuario:', error);
-    //         return null;
-    //     }
-    // }
+    getLastUser(): User | null {
+        return this.lastUser;
+    }
 
 } 

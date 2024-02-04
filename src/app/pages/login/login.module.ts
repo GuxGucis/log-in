@@ -8,16 +8,18 @@ import { LoginPageRoutingModule } from './login-routing.module';
 
 import { LoginPage } from './login.page';
 import { ComponentsModule } from 'src/app/components/components.module';
+import { PipesModule } from "../../pipes/pipes.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    LoginPageRoutingModule,
-    ComponentsModule,
-    ReactiveFormsModule
-  ],
-  declarations: [LoginPage]
+    declarations: [LoginPage],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        LoginPageRoutingModule,
+        ComponentsModule,
+        ReactiveFormsModule,
+        PipesModule
+    ]
 })
 export class LoginPageModule {}

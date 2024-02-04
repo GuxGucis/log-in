@@ -1,30 +1,30 @@
-// import { Injectable } from '@angular/core';
-// import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
-// import { UtilService } from '../services/util.service';
-// import { LoginPage } from '../pages/login/login.page';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { UtilService } from '../services/util.service';
+import { MySqlite } from '../services/mysqlite.service';
 
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class NoLoginGuard implements CanActivate {
+@Injectable({
+  providedIn: 'root'
+})
+export class NoLoginGuard implements CanActivate {
 
-//   constructor(
-//     private utilsSvc: UtilService,
-//     private loginPage:  LoginPage
-//   ){}
+  constructor(
+    private utilsSvc: UtilService,
+    private SQLiteSvc: MySqlite
+  ){}
 
-//   async canActivate(
-//     route: ActivatedRouteSnapshot,
-//     state: RouterStateSnapshot
-//   ): Promise<boolean> {
+  async canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Promise<boolean> {
         
-//       if(await this.loginPage.LogUser() == null){
-//         return true;
-//       }else{
-//         this.utilsSvc.routerLink('/home');
-//         return false;
-//       }
+      if(await this.SQLiteSvc.LoggedUser == false){
+        return true;
+      }else{
+        this.utilsSvc.routerLink('/home');
+        return false;
+      }
 
-//     }
+    }
   
-// }
+}

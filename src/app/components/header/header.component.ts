@@ -1,5 +1,6 @@
 import { Component, INJECTOR, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { TranslationService } from 'src/app/services/translate.service';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,19 @@ export class HeaderComponent {
   @Input() title!: string | "AppIonic";
   @Input() type: any;
   @Input() label!: string;
+  @Input() translation!: boolean | true;
+  @Input() backButton: string | undefined;
 
-  constructor() { }
+  selectedLanguage: string;
+
+  constructor(
+    private translationSvc: TranslationService
+  ) { 
+    this.selectedLanguage = this.translationSvc.getCurrentLang();
+   }
+
+  switchLanguage(lang: string) {
+    this.translationSvc.setLanguage(lang).subscribe();
+  }
 
 }
