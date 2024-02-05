@@ -1,9 +1,17 @@
 {
     "Welcome": "¡Hi! Welcome",
     "UserName": "User name",
+    "Email": "Email",
     "Password": "Password",
     "Enter": "Enter",
     "UserNameError1": "Please, enter a user name",
+    "EmailError1": "Please, enter a email",
+    "EmailError2": "The email format is incorrect",
     "PasswordError1": "Please, enter the Password",
+    "PasswordError2": "Password must be at least 8 characters long",
+    "PasswordError3": "Password must include at least one uppercase letter",
+    "PasswordError4": "Password must include at least one lowercase letter",
+    "PasswordError5": "Password must include at least one number",
+    "PasswordError6": "Password must include at least one special character",
     "Register": "Register"
 }

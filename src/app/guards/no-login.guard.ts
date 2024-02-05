@@ -18,7 +18,7 @@ export class NoLoginGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Promise<boolean> {
         
-      if(await this.SQLiteSvc.LoggedUser == false){
+      if(await this.SQLiteSvc.getLoggedUser() == false){
         return true;
       }else{
         this.utilsSvc.routerLink('/home');

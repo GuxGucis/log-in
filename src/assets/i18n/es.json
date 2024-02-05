@@ -1,9 +1,12 @@
 {
     "Welcome": "¡Hola! Bienvenido/a",
     "UserName": "Nombre de Usuario",
+    "Email": "Correo electrónico",
     "Password": "Contraseña",
     "Enter": "Ingresar",
     "UserNameError1": "Por favor, ingresa un nombre de usuario",
+    "EmailError1": "Por favor, ingresa un correo electrónico",
+    "EmailError2": "El formato del correo es incorrecto",
     "PasswordError1": "Por favor, introduce la contraseña",
     "PasswordError2": "La longitud mínima es 8 caracteres",
     "PasswordError3": "Debe tener al menos una letra mayúscula",

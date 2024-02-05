@@ -1,10 +1,11 @@
 import { Injectable} from '@angular/core';
 import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { User } from '../interfaces/user.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Platform, ToastController } from '@ionic/angular';
 import { HashService } from './hash.service';
 import { UtilService } from './util.service';
+import { StorageService } from './storage.service';
 
 const DB_USERS = 'UserDB'
 
@@ -12,49 +13,54 @@ const DB_USERS = 'UserDB'
 
 export class MySqlite {
 
+    private dbInitialized: boolean = false;
+
     sqlitePlugin!: CapacitorSQLitePlugin;
     sqliteConnection!: SQLiteConnection;
     private db!: SQLiteDBConnection;
 
     private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
-    private listaUsuarios = new BehaviorSubject<User[]>([]);
-
-    private lastUser: User | null = null;
-    public LoggedUser = false;
 
     constructor(
         private platform: Platform, 
         public toastController: ToastController,
         private hashSvc: HashService,
-        private utilsSvc: UtilService
+        private utilsSvc: UtilService,
+        private storageSvc: StorageService
     ) {}
 
     // Función que inicializa la base de datos
 
     async initializeDB() {
 
-        try{
-            await this.platform.ready();
-        
-            this.sqlitePlugin = CapacitorSQLite;
-            this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
-            await this.sqliteConnection.initWebStore();
+        if(!this.dbInitialized){
+            try{
 
-            this.db = await this.sqliteConnection.createConnection(DB_USERS, false, 'no-encryption', 1, false);
+                await this.platform.ready();
             
-            await this.db.open();
+                this.sqlitePlugin = CapacitorSQLite;
+                this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
+                await this.sqliteConnection.initWebStore();
 
-            await this.createTables();
+                this.db = await this.sqliteConnection.createConnection(DB_USERS, false, 'no-encryption', 1, false);
+                
+                await this.db.open();
 
-            await this.sqliteConnection.saveToStore(DB_USERS);
+                await this.createTables();
 
-            return true;
+                await this.sqliteConnection.saveToStore(DB_USERS);
 
-        }catch(error){
+                return true;
 
-            console.error('Error al crear la Base de datos:', error);
-            return false;
+            }catch(error){
+
+                console.error('Error al crear la Base de datos:', error);
+                return false;
+            }
+        } else {
+            console.log("Database already initialized.");
         }
+        return Promise.resolve();
     }
 
     // Función que crea las tablas correspondientes a los usuarios
@@ -65,10 +71,11 @@ export class MySqlite {
             await this.db.execute(`CREATE TABLE IF NOT EXISTS Usuarios (
                                     id INTEGER PRIMARY KEY autoincrement, 
                                     userName TEXT UNIQUE NOT NULL,
+                                    email  TEXT UNIQUE NOT NULL,
                                     password TEXT NOT NULL
                                     );`);
             
-            this.fetchUsuarios();
+            this.storageSvc.fetchUsuarios(this.db);
             this.isDBReady.next(true);
             return true;
 
@@ -90,6 +97,7 @@ export class MySqlite {
                 const user: User = {
                     id: result.values[0].id,
                     userName: result.values[0].userName,
+                    email: result.values[0].email,
                     password: result.values[0].password, // Be cautious with password handling
                 };
                 return user;
@@ -106,10 +114,10 @@ export class MySqlite {
 
     // Devulve si el usuario esta logeado (existe en la BBDD)
     
-    async isUserLoggedIn(userName: string, rawPassword: string): Promise<boolean | string> {
+    async isUserLoggedIn(userName: string, rawPassword: string): Promise<boolean> {
         try {
 
-            const user = await this.getUserByUserName(userName)
+            const user = await this.storageSvc.getUserByUserName(userName)
 
             if( user != false){
                 // User Match
@@ -117,7 +125,7 @@ export class MySqlite {
                 
                 if (user.password === hashedPassword) {
                     // Passwords match
-                    this.LoggedUser = true;
+                    this.storageSvc.LoggedUser = true;
                     return true;
 
                 } else {
@@ -156,40 +164,31 @@ export class MySqlite {
         }
     }
 
-    //  Devuelve un array con todos los usuarios guardados en la BD
+    async addUser(userName: string, email: string, Password: string){
 
-    async fetchUsuarios() {
-        try {
-            const result = await this.db.query(`SELECT * FROM Usuarios`);
-            let items = [];
-            if(result.values != undefined){
-                for (let i = 0; i < result.values.length; i++) {
-                    items.push(result.values[i]);
-                }
-                this.listaUsuarios.next(items);
-                const users = this.listaUsuarios.getValue();
-                this.lastUser = users.length > 0 ? users[users.length - 1] : null;
-                return true;
-            }else{
-                return  false;
-            }
+        return await this.storageSvc.StorageUser(this.db, userName, email, Password); 
 
-        } catch (error) {
-            console.error('Error al hacer fetch:', error);
-            return false; // Error in adding the user
-        }
     }
 
     // Devuelve la Base de Datos
 
-    getDB(): SQLiteDBConnection{
+    getDB(){
         return this.db;
     }
 
     // Devuelve  el ultimo usuario agregado a la lista o nulo si no hay ninguno
     
     getLastUser(): User | null {
-        return this.lastUser;
+        
+        return this.storageSvc.getStorageLastUser(this.db);
+    }
+
+    setLoggedUser(status: boolean){
+        this.storageSvc.LoggedUser = status;
+    }
+
+    getLoggedUser(){
+        return this.storageSvc.LoggedUser;
     }
 
 } 

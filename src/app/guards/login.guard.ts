@@ -17,7 +17,7 @@ export class LoginGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Promise<boolean> {
     
-      if(await this.SQLiteSvc.LoggedUser == true){
+      if(await this.SQLiteSvc.getLoggedUser() == true){
         return true;
       }else{
         this.utilsSvc.routerLink('/login');

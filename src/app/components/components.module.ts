@@ -4,16 +4,19 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { HeaderComponent } from './header/header.component';
 import { PipesModule } from '../pipes/pipes.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SinginFormComponent } from './singin-form/singin-form.component';
 
 
 
 @NgModule({
   declarations: [
-    HeaderComponent
+    HeaderComponent,
+    SinginFormComponent
   ],
   exports:[
-    HeaderComponent
+    HeaderComponent,
+    SinginFormComponent
   ],
   imports: [
     CommonModule,
@@ -21,6 +24,7 @@ import { FormsModule } from '@angular/forms';
     IonicModule,
     PipesModule,
     FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class ComponentsModule { }

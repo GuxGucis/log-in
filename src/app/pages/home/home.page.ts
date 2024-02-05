@@ -29,7 +29,7 @@ export class HomePage {
         }, {
           text: 'Si, cerrar',
           handler: () => {
-            this.sqliteSvc.LoggedUser = false,
+            this.sqliteSvc.setLoggedUser(false),
             this.utilsSvc.routerLink('/login');
           }
         }

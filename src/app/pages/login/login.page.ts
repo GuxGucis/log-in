@@ -1,17 +1,16 @@
-import { Component, OnInit} from '@angular/core';
+import { Component} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UtilService } from 'src/app/services/util.service';
 import { User } from 'src/app/interfaces/user.model';
 import { MySqlite } from 'src/app/services/mysqlite.service';
 import { TranslationService } from 'src/app/services/translate.service';
-import { HashService } from 'src/app/services/hash.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit{
+export class LoginPage{
 
   LoggedUser!: User;
   HashPass!: string;
@@ -27,10 +26,6 @@ export class LoginPage implements OnInit{
     private translationSvc:  TranslationService
   ) {
     this.translationSvc.setLanguage('es').subscribe();
-  }
-
-  async ngOnInit() {
-    await this.mysqliteSvc.initializeDB();
   }
 
   changeLanguage(lang: string) {

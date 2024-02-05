@@ -34,53 +34,33 @@ export class SigninPage{
 
   ) { }
 
-  async Submit(){
+  async handleFormSubmit(formValue: { userName: string; email: string; password: string }) {
+    const { userName, email, password } = formValue;
+    this.HashPass = this.hashSvc.HashingPassword(password)
+          
+    let user: User = {
+      id : +1,
+      userName: userName,
+      email: email,
+      password: this.HashPass
+    }
     
-    if(this.singForm.valid){
-      
-      if(this.singForm.value.userName != null && this.singForm.value.userName != undefined ){
-        
-        if(this.singForm.value.password != null && this.singForm.value.password != undefined){
+    if(await this.mysqliteSvc.addUser(user.userName, user.email, user.password)){
 
-          this.HashPass = this.hashSvc.HashingPassword(this.singForm.value.password)
-          
-          let user: User = {
-            id : +1,
-            userName: this.singForm.value.userName,
-            password: this.HashPass
-          }
-          
-          if(await this.storageSvc.addUser(user.userName, user.password)){
+      console.log('Usuario logeado', this.mysqliteSvc.getLastUser());
+      this.utilsSvc.routerLink('/home');
+      return true;
 
-            await this.mysqliteSvc.fetchUsuarios();
-            console.log('Usuario logeado', this.mysqliteSvc.getLastUser());
-            this.utilsSvc.routerLink('/home');
-            return true;
-
-          }else{
-            // User do match
-            this.utilsSvc.presentToast({
-              message: "Usuario ya registrado",
-              duration: 5000, //milisegundos
-              color: 'warning',
-              icon: 'alert-circle-outline'
-            })
-            this.singForm.reset();
-            console.log('Se ha encontrado un usuario');
-            return false;
-          }
-
-        }else{
-          console.log('Error en el log de la contraseña');
-          return false;
-        }
-
-      }else{
-        console.log('Error en el log de Usuario');
-        return false;
-      }
     }else{
-      console.log('Error el formulario no es válido');
+      // User do match
+      this.utilsSvc.presentToast({
+        message: "Usuario ya registrado",
+        duration: 5000, //milisegundos
+        color: 'warning',
+        icon: 'alert-circle-outline'
+      })
+      this.singForm.reset();
+      console.log('Se ha encontrado un usuario');
       return false;
     }
   }
