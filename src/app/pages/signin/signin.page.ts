@@ -51,20 +51,37 @@ export class SigninPage{
           }
           
           if(await this.storageSvc.addUser(user.userName, user.password)){
+
             await this.mysqliteSvc.fetchUsuarios();
-            console.log('Usuario logeado', this.mysqliteSvc.getLastUser())
-            this.utilsSvc.routerLink('/home')
+            console.log('Usuario logeado', this.mysqliteSvc.getLastUser());
+            this.utilsSvc.routerLink('/home');
+            return true;
+
+          }else{
+            // User do match
+            this.utilsSvc.presentToast({
+              message: "Usuario ya registrado",
+              duration: 5000, //milisegundos
+              color: 'warning',
+              icon: 'alert-circle-outline'
+            })
+            this.singForm.reset();
+            console.log('Se ha encontrado un usuario');
+            return false;
           }
 
         }else{
           console.log('Error en el log de la contraseña');
+          return false;
         }
 
       }else{
         console.log('Error en el log de Usuario');
+        return false;
       }
     }else{
       console.log('Error el formulario no es válido');
+      return false;
     }
   }
 

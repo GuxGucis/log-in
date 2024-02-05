@@ -5,7 +5,6 @@ import { User } from 'src/app/interfaces/user.model';
 import { MySqlite } from 'src/app/services/mysqlite.service';
 import { TranslationService } from 'src/app/services/translate.service';
 import { HashService } from 'src/app/services/hash.service';
-import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -25,8 +24,7 @@ export class LoginPage implements OnInit{
   constructor(
     private mysqliteSvc: MySqlite,
     private utilsSvc: UtilService,
-    private translationSvc:  TranslationService,
-    private hashSvc: HashService
+    private translationSvc:  TranslationService
   ) {
     this.translationSvc.setLanguage('es').subscribe();
   }
@@ -55,6 +53,7 @@ export class LoginPage implements OnInit{
               return true;
 
             }else{
+              this.logForm.reset();
               console.log("NO se ha podido iniciar sesión");
               return false;
             }
