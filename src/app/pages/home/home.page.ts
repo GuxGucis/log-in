@@ -1,5 +1,6 @@
 import { Component} from '@angular/core';
 import { MySqlite } from 'src/app/services/mysqlite.service';
+import { UserService } from 'src/app/services/user.service';
 import { UtilService } from 'src/app/services/util.service';
 
 @Component({
@@ -9,14 +10,13 @@ import { UtilService } from 'src/app/services/util.service';
 })
 export class HomePage {
 
-  // user = this.utilsSvc.getElementInLocalStorage('user').userName
-
   constructor(
     private utilsSvc: UtilService,
-    private sqliteSvc: MySqlite
+    private sqliteSvc: MySqlite,
+    private userSvc: UserService
   ) { }
 
-  userName = this.sqliteSvc.getLastUser()?.userName
+  userName = this.userSvc.lastUser?.userName;
 
   singOut(){
     this.utilsSvc.presentAlert({
@@ -29,7 +29,7 @@ export class HomePage {
         }, {
           text: 'Si, cerrar',
           handler: () => {
-            this.sqliteSvc.setLoggedUser(false),
+            this.userSvc.setLoggedUser(false),
             this.utilsSvc.routerLink('/login');
           }
         }

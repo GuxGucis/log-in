@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class StorageService {
+export class UserService {
 
   private db!: SQLiteDBConnection;
   public lastUser: User | null = null;
@@ -84,12 +84,12 @@ export class StorageService {
     }
   }
 
-  // Devuelve el  ultimo usuario agregado a la lista de usuarios
-  async getStorageLastUser(db: SQLiteDBConnection) {
+  setLoggedUser(status: boolean){
+    this.LoggedUser = status;
+  }
 
-    await this.fetchUsuarios(db);
-    return this.lastUser;
-
+  getLoggedUser(){
+      return this.LoggedUser;
   }
 
 }

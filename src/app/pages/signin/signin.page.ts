@@ -3,7 +3,7 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn,
 import { User } from 'src/app/interfaces/user.model';
 import { HashService } from 'src/app/services/hash.service';
 import { MySqlite } from 'src/app/services/mysqlite.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { UserService } from 'src/app/services/user.service';
 import { UtilService } from 'src/app/services/util.service';
 
 @Component({
@@ -28,7 +28,7 @@ export class SigninPage{
 
   constructor(
     private mysqliteSvc: MySqlite,
-    private storageSvc: StorageService,
+    private userSvc: UserService,
     private utilsSvc: UtilService,
     private hashSvc: HashService
 
@@ -47,7 +47,7 @@ export class SigninPage{
     
     if(await this.mysqliteSvc.addUser(user.userName, user.email, user.password)){
 
-      console.log('Usuario logeado', this.mysqliteSvc.getLastUser());
+      console.log('Usuario logeado', this.userSvc.lastUser);
       this.utilsSvc.routerLink('/home');
       return true;
 

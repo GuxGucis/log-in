@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Platform, ToastController } from '@ionic/angular';
 import { HashService } from './hash.service';
 import { UtilService } from './util.service';
-import { StorageService } from './storage.service';
+import { UserService } from './user.service';
 
 const DB_USERS = 'UserDB'
 
@@ -26,7 +26,7 @@ export class MySqlite {
         public toastController: ToastController,
         private hashSvc: HashService,
         private utilsSvc: UtilService,
-        private storageSvc: StorageService
+        private userSvc: UserService
     ) {}
 
     // Función que inicializa la base de datos
@@ -75,7 +75,7 @@ export class MySqlite {
                                     password TEXT NOT NULL
                                     );`);
             
-            this.storageSvc.fetchUsuarios(this.db);
+            this.userSvc.fetchUsuarios(this.db);
             this.isDBReady.next(true);
             return true;
 
@@ -117,7 +117,7 @@ export class MySqlite {
     async isUserLoggedIn(userName: string, rawPassword: string): Promise<boolean> {
         try {
 
-            const user = await this.storageSvc.getUserByUserName(userName)
+            const user = await this.userSvc.getUserByUserName(userName)
 
             if( user != false){
                 // User Match
@@ -125,7 +125,7 @@ export class MySqlite {
                 
                 if (user.password === hashedPassword) {
                     // Passwords match
-                    this.storageSvc.LoggedUser = true;
+                    this.userSvc.LoggedUser = true;
                     return true;
 
                 } else {
@@ -166,7 +166,7 @@ export class MySqlite {
 
     async addUser(userName: string, email: string, Password: string){
 
-        return await this.storageSvc.StorageUser(this.db, userName, email, Password); 
+        return await this.userSvc.StorageUser(this.db, userName, email, Password); 
 
     }
 
@@ -174,21 +174,6 @@ export class MySqlite {
 
     getDB(){
         return this.db;
-    }
-
-    // Devuelve  el ultimo usuario agregado a la lista o nulo si no hay ninguno
-    
-    getLastUser(): User | null {
-        
-        return this.storageSvc.getStorageLastUser(this.db);
-    }
-
-    setLoggedUser(status: boolean){
-        this.storageSvc.LoggedUser = status;
-    }
-
-    getLoggedUser(){
-        return this.storageSvc.LoggedUser;
     }
 
 } 
