@@ -1,19 +1,23 @@
-import { Component} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UtilService } from 'src/app/services/util.service';
 import { User } from 'src/app/interfaces/user.model';
-import { MySqlite } from 'src/app/services/mysqlite.service';
 import { TranslationService } from 'src/app/services/translate.service';
+import { UserService } from 'src/app/services/user.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage{
+export class LoginPage implements OnInit{
 
   LoggedUser!: User;
   HashPass!: string;
+
+  UsersList!: any;
 
   logForm = new FormGroup({
     userName: new FormControl('', [Validators.required]),
@@ -21,11 +25,29 @@ export class LoginPage{
   })
 
   constructor(
-    private mysqliteSvc: MySqlite,
+    private userSvc:  UserService,
     private utilsSvc: UtilService,
-    private translationSvc:  TranslationService
+    private translationSvc:  TranslationService,
+    private router: Router // Inject the Router
   ) {
     this.translationSvc.setLanguage('es').subscribe();
+  }
+
+  ngOnInit(): void {
+    this.userSvc.fetchUsernames();
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd) 
+    ).subscribe((event) => {
+      this.userSvc.fetchUsernames();
+    });
+  }
+
+  fetchUsernames(): void {
+    this.userSvc.getUsernames().then(usernames => {
+      this.UsersList = usernames;
+    }).catch(error => {
+      console.error('Error fetching usernames:', error);
+    });
   }
 
   changeLanguage(lang: string) {
@@ -35,11 +57,11 @@ export class LoginPage{
   async isUserLoggedIn(){
     try {
 
-        if(this.logForm.value.userName != null && this.logForm.value.userName != undefined ){
+        if(this.logForm.value.userName != null){
         
-          if(this.logForm.value.password != null && this.logForm.value.password != undefined){
+          if(this.logForm.value.password != null){
 
-            const result = await this.mysqliteSvc.isUserLoggedIn(this.logForm.value.userName, this.logForm.value.password);
+            const result = await this.userSvc.isUserLoggedIn(this.logForm.value.userName, this.logForm.value.password);
 
             if(result == true){
 
@@ -57,8 +79,9 @@ export class LoginPage{
             console.log('Error en el log de Usuario');
             return false;
           }
+
         }else{
-          console.log('Error el formulario no es válido');
+          console.log('Error el formulario no es válido', this.logForm.value.userName);
           return false;
         }
 

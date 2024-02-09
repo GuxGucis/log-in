@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -9,13 +9,11 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MySqlite } from './services/mysqlite.service';
 import { PipesModule } from './pipes/pipes.module';
+import { registerLocaleData } from '@angular/common';
+import es from '@angular/common/locales/es';
 
-export function initializeApp(mySqliteService: MySqlite) {
-  return (): Promise<any> => { 
-    // Call the initialize method in your MySqlite service
-    return mySqliteService.initializeDB();
-  }
-}
+registerLocaleData(es)
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,13 +27,8 @@ export function initializeApp(mySqliteService: MySqlite) {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     MySqlite,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [MySqlite], // Dependency Injection
-      multi: true // Important: APP_INITIALIZER can have multiple functions
-    },
-    PipesModule
+    PipesModule,
+    { provide: LOCALE_ID, useValue: 'es-ES' },
   ],
   bootstrap: [AppComponent],
   schemas: [

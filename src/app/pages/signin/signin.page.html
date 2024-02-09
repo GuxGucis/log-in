@@ -7,7 +7,92 @@
 
     <ion-col sizeLg="4" sizeMd="6" sizeSm="8" size="12">
 
-      <app-singin-form (formSubmit)="handleFormSubmit($event)"></app-singin-form>
+    <ion-card>
+      <form [formGroup]="singForm" (ngSubmit)="onSubmit()">
+        <div>
+
+          <!-- ------------------------- USER INPUT ------------------------- -->
+
+          <app-input intype="text" type="userName" [control]="singForm.controls.userName" label="{{ 'UserName' | translate | async }}" [required]="true"></app-input>
+          <div class="validators" *ngIf="singForm.controls.userName.errors && singForm.controls.userName.dirty">
+            <div *ngIf="singForm.controls.userName.errors?.['required']">{{ 'UserNameError1' |  translate | async }}</div> 
+          </div>
+
+          <!-- ------------------------- EMAIL INPUT ------------------------- -->
+
+          <app-input intype="text" type="email" [control]="singForm.controls.email" label="{{ 'Email' | translate | async }}" [required]="true"></app-input>
+          <div class="validators" *ngIf="singForm.controls.email.errors && singForm.controls.email.dirty">
+            <div *ngIf="singForm.controls.email.errors?.['required']">{{ 'EmailError1' |  translate | async }}</div>
+            <div *ngIf="singForm.controls.email.errors?.['email']">{{ 'EmailError2' |  translate | async }}</div>
+          </div>
+
+          <!-- ------------------------- PHONE INPUT ------------------------- -->
+
+          <app-input intype="text" type="phone" [control]="singForm.controls.phone" label="{{ 'Phone' | translate | async }}"></app-input>
+          <div class="validators" *ngIf="singForm.controls.phone.errors && singForm.controls.phone.dirty">
+            <div *ngIf="singForm.controls.phone.errors?.['numeric']">{{ 'PhoneError1' |  translate | async }}</div>
+          </div>
+
+          <!-- ------------------------- NAME INPUT ------------------------- -->
+
+          <app-input intype="text" type="name" [control]="singForm.controls.name" label="{{ 'Name' | translate | async }}" [required]="true"></app-input>
+          <div class="validators" *ngIf="singForm.controls.name.errors && singForm.controls.name.dirty">
+            <div *ngIf="singForm.controls.name.errors?.['required']">{{ 'NameError1' |  translate | async }}</div> 
+          </div>
+
+          <!-- ------------------------- SURNAME INPUT ------------------------- -->
+
+          <app-input intype="text" type="surname" [control]="singForm.controls.surname" label="{{ 'Surname' | translate | async }}" [required]="true"></app-input>
+          <div class="validators" *ngIf="singForm.controls.surname.errors && singForm.controls.surname.dirty">
+            <div *ngIf="singForm.controls.surname.errors?.['required']">{{ 'SurnameError1' |  translate | async }}</div> 
+          </div>
+          
+          <!-- ------------------------- GENDER CHECKBOX ------------------------- -->
+
+          <app-input 
+            [control]="singForm.controls.gender" intype="checkbox" 
+            label="{{ 'Gender' | translate | async }}" [CheckboxOptions]="genders" 
+            type="gender" [required]="true" (selectedCheckbox)="handleGenderSelection($event)">
+          </app-input>
+          <div class="validators" *ngIf="singForm.controls.gender.errors && singForm.controls.gender.dirty">
+            <div *ngIf="singForm.controls.gender.errors?.['required']">{{ 'UserNameError1' |  translate | async }}</div> 
+          </div>
+
+          <!-- ------------------------- PASSWORD INPUT ------------------------- -->
+
+          <app-input intype="text" type="password" [control]="singForm.controls.password" label="{{ 'Password' | translate | async }}" [required]="true"></app-input>
+          <div class="validators" *ngIf="singForm.controls.password.errors && singForm.controls.password.dirty">
+            <div *ngIf="singForm.controls.password.errors?.['required']">{{ 'PasswordError1' | translate | async }}</div>
+            <div *ngIf="singForm.controls.password.errors?.['minlength']">{{ 'PasswordError2' | translate | async }}</div>
+            <div *ngIf="singForm.get('password')?.errors?.['uppercaseRequired']">{{ 'PasswordError3' | translate | async }}</div>
+            <div *ngIf="singForm.get('password')?.errors?.['lowercaseRequired']">{{ 'PasswordError4' | translate | async }}</div>
+            <div *ngIf="singForm.get('password')?.errors?.['numericRequired']">{{ 'PasswordError5' | translate | async }}</div>
+            <div *ngIf="singForm.get('password')?.errors?.['specialCharRequired']">{{ 'PasswordError6' | translate | async }}</div>
+          </div>
+
+          <!-- ------------------------- LOCATION SELECTION ------------------------- -->
+          <!-- Ciudad -->
+          <app-input [control]="singForm.controls.country" intype="select" label="{{ 'Country' | translate | async }}" [SelectList]="Countries" type="Cuidad" [required]="true"></app-input>
+          <div class="validators" *ngIf="singForm.controls.country.errors && singForm.controls.country.dirty">
+            <div *ngIf="singForm.controls.country.errors?.['required']">{{ 'CountryError1' |  translate | async }}</div> 
+          </div>
+
+          <!-- Comunidad Autónoma -->
+          <ng-container *ngIf="singForm.get('comunidadAutonoma')?.enabled">
+            <app-input [control]="singForm.controls.comunidadAutonoma" intype="select" label="{{ 'Region' | translate | async }}" [SelectList]="comunidadAutonoma" type="Comunidad autónoma"></app-input>
+          </ng-container>
+
+          <!-- Provincia -->
+          <ng-container *ngIf="singForm.get('provincia')?.enabled && singForm.get('comunidadAutonoma')?.enabled">
+            <app-input [control]="singForm.controls.provincia" intype="select" label="{{ 'Province' | translate | async }}" [SelectList]="provincia" type="Provincia"></app-input>
+          </ng-container>
+
+
+          <ion-button [disabled]="singForm.invalid"  type="submit">{{ 'Enter' | translate | async }}</ion-button>
+
+        </div>
+      </form>
+    </ion-card>
 
     </ion-col>
 

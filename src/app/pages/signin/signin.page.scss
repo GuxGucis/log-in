@@ -1,9 +1,21 @@
-.prompt-text{
-    color: #1e1e1e;
+ion-card {
+    margin-top: 150px;
+    background-color: var(--ion-color-primary-contrast);
+    border: solid;
+    border-color: #1e1e1e;
+    padding: 10px;
 }
+
   
 ion-button {
     height: fit-content;
     text-transform: none;
 }
 
+.validators{
+    font-size: 14px;
+    color: var(--ion-color-danger);
+    padding-bottom: 5px;
+    text-align: left;
+    padding-left: 10px;
+}

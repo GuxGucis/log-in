@@ -5,18 +5,19 @@ import { IonicModule } from '@ionic/angular';
 import { HeaderComponent } from './header/header.component';
 import { PipesModule } from '../pipes/pipes.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SinginFormComponent } from './singin-form/singin-form.component';
+import { InputComponent} from './input/input.component';
 
 
 
 @NgModule({
   declarations: [
     HeaderComponent,
-    SinginFormComponent
+    InputComponent
+
   ],
   exports:[
     HeaderComponent,
-    SinginFormComponent
+    InputComponent
   ],
   imports: [
     CommonModule,

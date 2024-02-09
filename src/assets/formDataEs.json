@@ -1,0 +1,26 @@
+{   "Gender": ["Mujer", "Hombre", "Otro"],
+    "Country": ["España", "Portugal", "Francia", "China", "Estados Unidos", "Italia", "Alemania", "Reino Unido", "Noruega"],
+    "Region": ["Andalucía", "Aragón", "Islas Baleares", "Canarias", "Cantabria", "Castilla-La Mancha", "Castilla y León", "Cataluña", "Comunidad de Madrid", "Comunidad Foral de Navarra", "Comunidad Valenciana", "Extremadura", "Galicia", "País Vasco", "Principado de Asturias", "Región de Murcia", "La Rioja"],
+    "Province":{
+        "Andalucía": ["Jaén", "Córdoba", "Huelva", "Málaga", "Sevilla", "Granada", "Almería", "Cádiz"],
+        "Aragón": ["Huesca", "Teruel", "Zaragoza"],
+        "Cantabria": ["Cantabria"],
+        "Principado de Asturias": ["Asturias"],
+        "Canarias": ["Las Palmas","Santa Cruz de Tenerife"], 
+        "Castilla-La Mancha": ["Toledo", "Ciudad Real" , "Cuenca", "Guadalajara", "Albacete", "Badajoz"],
+        "Castilla y León": ["León", "Salamanca", "Valladolid", "Soria", "Segovia", "Zamora", "Burgos", "Palencia", "Ávila"],
+        "Cataluña": ["Girona", "Lleida", "Barcelona", "Tarragona"],
+        "Ceuta": ["Ceuta"],
+        "Comunidad de Madrid": ["Madrid"],
+        "Comunidad Foral de Navarra": ["Navarra"],
+        "Comunidad Valenciana": ["Castellón", "Valencia", "Alicante"],
+        "Extremadura" :["Badajoz", "Cáceres"],
+        "Galicia": ["Orense", "Lugo", "Pontevedra", "A Coruña"],
+        "Islas Baleares": ["Baleares"],
+        "Melilla": [ "Melilla"],
+        "País Vasco": ["Vizcaya", "Álava", "Gipuzcoa"],
+        "La Rioja": ["Logroño"],
+        "Región de Murcia": ["Murcia"]
+    }
+    
+}

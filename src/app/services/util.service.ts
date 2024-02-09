@@ -33,8 +33,13 @@ export class UtilService {
 
   //------------- Toast -----------------------
 
-  async presentToast(opt: ToastOptions) {
-    const toast = await this.toastController.create(opt);
+  async presentToast(mensage: string) {
+    const toast = await this.toastController.create({
+      message: mensage,
+      duration: 5000, //milisegundos
+      color: 'warning',
+      icon: 'alert-circle-outline'
+    });
     toast.present();
   }
 
