@@ -27,13 +27,13 @@ export class UtilService {
 
   // ----------- Router Link -----------
 
-  routerLink(url: string){
+  routerLink(url: string): Promise<boolean>{
     return this.router.navigateByUrl(url);
   }
 
   //------------- Toast -----------------------
 
-  async presentToast(mensage: string) {
+  async presentToast(mensage: string): Promise<void> {
     const toast = await this.toastController.create({
       message: mensage,
       duration: 5000, //milisegundos
@@ -45,7 +45,7 @@ export class UtilService {
 
   //----------- Alerta de confirmacion -------------
 
-  async presentAlert(opt: AlertOptions) {
+  async presentAlert(opt: AlertOptions): Promise<void>  {
     const alert = await this.alertController.create(opt);
   
     await alert.present();

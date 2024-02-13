@@ -20,7 +20,7 @@
             </div> -->
 
             <app-input [control]="logForm.controls.userName" intype="select" label="{{ 'UserName' | translate | async }}" 
-                        [SelectList]="UsersList" type="User" [required]="true"></app-input>
+                        [SelectList]="UsersList" type="User" [required]="true" (click)="onUserList()"></app-input>
 
             <div class="input">
               <ion-label class="prompt-text" position="stacked">{{ 'Password' | translate | async }}</ion-label>

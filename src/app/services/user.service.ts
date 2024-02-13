@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { User } from '../interfaces/user.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { HashService } from './hash.service';
 import { UtilService } from './util.service';
 
@@ -13,47 +14,61 @@ export class UserService {
   public db!: SQLiteDBConnection;
   public lastUser: User | null = null;
   public LoggedUser = false;
+  public UsersList! : string[];
 
   private user!: User;
   private readonly jwtSecret = 'yourSecretKey';
   
   private listaUsuarios = new BehaviorSubject<User[]>([]);
 
+  private baseUrl = 'http://localhost:3000'; 
+
   constructor( 
 
     private hashSvc: HashService,
-    private utilsSvc: UtilService
+    private utilsSvc: UtilService,
+    private http: HttpClient
   
   ) { }
 
+  // Send user data to the Node.js server for registration
+  registerUserHTTP(userData: User): Observable<any> {
+    return this.http.post(`${this.baseUrl}/singin`, userData);
+  }
+
+  // Send login credentials to the Node.js server
+  loginUserHTTP(username: string, password: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/login`, { username, password });
+  }
+
     // Función que crea las tablas correspondientes a los usuarios
 
-    async createUserTables(db: SQLiteDBConnection):Promise<boolean>{
+  async createUserTables(db: SQLiteDBConnection):Promise<boolean>{
 
-      try {
-          await db.execute(`CREATE TABLE IF NOT EXISTS Usuarios (
-                                  id INTEGER PRIMARY KEY autoincrement, 
-                                  userName TEXT UNIQUE NOT NULL,
-                                  email  TEXT UNIQUE NOT NULL,
-                                  phone INTEGER,
-                                  name TEXT NOT NULL,
-                                  surname TEXT NOT NULL,
-                                  gender TEXT NOT NULL,
-                                  password TEXT NOT NULL,
-                                  country TEXT NOT NULL,
-                                  ccaa TEXT,
-                                  provincia TEXT
-                                  );`);
-          
-          this.db = db;
-          
-          this.fetchUsuarios();
-          return true;
+    try {
+        await db.execute(`CREATE TABLE IF NOT EXISTS Usuarios (
+                                id INTEGER PRIMARY KEY autoincrement, 
+                                userName TEXT UNIQUE NOT NULL,
+                                email  TEXT UNIQUE NOT NULL,
+                                phone INTEGER,
+                                name TEXT NOT NULL,
+                                surname TEXT NOT NULL,
+                                gender TEXT NOT NULL,
+                                password TEXT NOT NULL,
+                                country TEXT NOT NULL,
+                                ccaa TEXT,
+                                provincia TEXT
+                                );`);
+        
+        this.db = db;
+        
+        this.fetchUsuarios();
+        return true;
 
-      } catch (error) {
-          console.error('Error al crear las tablas:', error);
-          return false;
-      }
+    } catch (error) {
+        console.error('Error al crear las tablas:', error);
+        return false;
+    }
 
   }
 
@@ -80,6 +95,7 @@ export class UserService {
         ccaa: ccaa,
         provincia: provincia
       }
+
       return true; // Success in adding the user
 
     } catch (error) {
@@ -113,13 +129,14 @@ export class UserService {
             return this.user;
 
         } else {
-
-            return this.user;
+          console.log('Usuario no encontrado');
+          return this.user;
         }
 
     }catch(error){
-        console.log('Error al buscar el usuario');
-        return this.user;
+      this.utilsSvc.presentToast("Error al buscar el usuario");
+      console.log('Error al buscar el usuario');
+      return this.user;
     }
   }
 
@@ -147,23 +164,57 @@ export class UserService {
     }
   }
 
+  //Devuelve y comprueba la contraseña
+
+  async verifyUserPassword(username: string, submittedPassword: string): Promise<boolean> {
+    try{
+
+      const result = await this.db.query(`SELECT password FROM Usuarios WHERE userName = ? LIMIT 1`, [username]);
+
+      if (result.values && result.values.length > 0) {
+          const storedHash = result.values[0].password;
+          const isMatch = await this.hashSvc.verifyPassword(submittedPassword, storedHash);
+          return isMatch;
+      } else {
+          // User not found
+          return false;
+      }
+    } catch (error) {
+      this.utilsSvc.presentToast("Error checking the password");
+      console.error('Error checking the password:', error);
+      return false; 
+  }
+}
+
   // Devulve si el usuario esta logeado (existe en la BBDD)
     
   async isUserLoggedIn(userName: string, rawPassword: string): Promise<boolean> {
     try {
 
         const user = await this.getUserByUserName(userName)
+        console.log('Usuario encontrado: ', user.userName);
 
         if( user != null || user != undefined){
             // User Match
-            const hashedPassword = this.hashSvc.HashingPassword(rawPassword); // Hash the password provided during login
-            
-            if (user.password === await hashedPassword) {
+
+            if (await this.verifyUserPassword(userName, rawPassword)) {
                 // Passwords match
-                console.log(user)
-                this.lastUser = user
-                this.LoggedUser = true;
-                return true;
+
+                const response = await firstValueFrom(this.loginUserHTTP(userName, rawPassword));
+    
+                if (response && response.token) {
+                  // If the server returns a token, login is successful
+                  localStorage.setItem('jwtToken', response.token);
+                  this.LoggedUser = true;
+                  this.lastUser = user;
+                  this.utilsSvc.routerLink('/home'); 
+                  console.log('Login successful:', response);
+                  return true;
+                } else {
+                  // Handle login failure (e.g., wrong credentials)
+                  console.log("Login failed");
+                  return false;
+                }
 
             } else {
                 // Passwords do not match

@@ -73,12 +73,12 @@ export class SigninPage implements OnInit{
     });
   }
 
-  handleGenderSelection(selectedGender: string | null) {
+  handleGenderSelection(selectedGender: string | null): void{
     this.singForm.get('gender')?.setValue(selectedGender);
   }
  
   async Submit(userName: string, email: string, phone: number, name: string, surname: string, gender: string,
-                 password: string, country: string, ccaa?: string, provincia?: string) {
+                 password: string, country: string, ccaa?: string, provincia?: string): Promise<boolean> {
     
     this.HashPass = await this.hashSvc.HashingPassword(password);
           
@@ -113,7 +113,7 @@ export class SigninPage implements OnInit{
     }
   }
 
-  async onSubmit() {
+  async onSubmit(): Promise<boolean> {
     if (this.singForm.valid) {
       
     const userName = this.singForm.value.userName ?? '';
@@ -136,20 +136,25 @@ export class SigninPage implements OnInit{
           );
   
         if (success) {
+
+          return true;
           
         } else {
           
-          this.utilsSvc.presentToast("Error específico al enviar los datos");
+          console.log("Error específico al enviar los datos");
+          return false;
         }
       } catch (error) {
         
         console.error("Submission error:", error);
         this.utilsSvc.presentToast("Error al enviar el formulario");
+        return false;
       }
     } else {
       
       this.utilsSvc.presentToast("Por favor, completa todos los campos requeridos correctamente.");
       console.log(this.singForm.value);
+      return false;
       
     }
   }

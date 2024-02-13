@@ -20,8 +20,8 @@ export class HomePage implements OnInit {
     this.userName = this.userSvc.getLastUser()?.userName
   }
 
-  singOut(){
-    this.utilsSvc.presentAlert({
+  singOut(): Promise<void>{
+    return this.utilsSvc.presentAlert({
       header: 'Cerrar sesión',
       message: '¿Seguro que deseas cerrar sesión?',
       buttons: [
@@ -32,11 +32,11 @@ export class HomePage implements OnInit {
           text: 'Si, cerrar',
           handler: () => {
             this.userSvc.setLoggedUser(false),
-            this.utilsSvc.routerLink('/login');
+              this.utilsSvc.routerLink('/login');
           }
         }
       ]
-    })
+    });
   }
 
 }

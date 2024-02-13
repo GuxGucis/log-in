@@ -11,6 +11,7 @@ import { MySqlite } from './services/mysqlite.service';
 import { PipesModule } from './pipes/pipes.module';
 import { registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
+import { HashService } from './services/hash.service';
 
 registerLocaleData(es)
 
@@ -29,6 +30,7 @@ registerLocaleData(es)
     MySqlite,
     PipesModule,
     { provide: LOCALE_ID, useValue: 'es-ES' },
+    HashService,
   ],
   bootstrap: [AppComponent],
   schemas: [

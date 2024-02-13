@@ -4,8 +4,8 @@ import { UtilService } from 'src/app/services/util.service';
 import { User } from 'src/app/interfaces/user.model';
 import { TranslationService } from 'src/app/services/translate.service';
 import { UserService } from 'src/app/services/user.service';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { JwtService } from 'src/app/services/jwt.service';
+import { catchError, firstValueFrom, map } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +17,7 @@ export class LoginPage implements OnInit{
   LoggedUser!: User;
   HashPass!: string;
 
-  UsersList!: any;
+  UsersList!: string[];
 
   logForm = new FormGroup({
     userName: new FormControl('', [Validators.required]),
@@ -28,47 +28,48 @@ export class LoginPage implements OnInit{
     private userSvc:  UserService,
     private utilsSvc: UtilService,
     private translationSvc:  TranslationService,
-    private router: Router // Inject the Router
+    private jwtSvc: JwtService
   ) {
     this.translationSvc.setLanguage('es').subscribe();
   }
 
+
   ngOnInit(): void {
-    this.userSvc.fetchUsernames();
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd) 
-    ).subscribe((event) => {
-      this.userSvc.fetchUsernames();
-    });
+
+    this.UsersList = this.userSvc.UsersList
+
   }
 
-  fetchUsernames(): void {
-    this.userSvc.getUsernames().then(usernames => {
+  onUserList(): Promise<boolean>{
+    return this.userSvc.fetchUsernames().then(usernames => {
       this.UsersList = usernames;
+      return true;
     }).catch(error => {
       console.error('Error fetching usernames:', error);
+      this.UsersList = []; // Set to an empty array in case of error
+      return false;
     });
   }
 
-  changeLanguage(lang: string) {
+  changeLanguage(lang: string): void {
     this.translationSvc.setLanguage(lang);
   }
 
-  async isUserLoggedIn(){
+  async isUserLoggedIn(): Promise<boolean>{
     try {
 
         if(this.logForm.value.userName != null){
         
           if(this.logForm.value.password != null){
 
-            const result = await this.userSvc.isUserLoggedIn(this.logForm.value.userName, this.logForm.value.password);
+            const isValidUser  = await this.userSvc.isUserLoggedIn(this.logForm.value.userName, this.logForm.value.password);
 
-            if(result == true){
-
-              this.utilsSvc.routerLink('/home');
+            if(isValidUser){
+              
               this.logForm.reset();
+              console.log('Access granted');
               return true;
-
+                    
             }else{
               this.logForm.reset();
               console.log("NO se ha podido iniciar sesión");
@@ -92,6 +93,24 @@ export class LoginPage implements OnInit{
   }
 
 }
+
+              // // Generamos JWT for the user
+              // const token = this.jwtSvc.generateToken({ username: this.logForm.value.userName, password: this.logForm.value.password });
+              // // Y lo guardamos en local
+              // localStorage.setItem('jwtToken', token);
+              // //Verificamos el Token
+              // const storedToken = localStorage.getItem('jwtToken') || '';
+
+              // if (this.jwtSvc.verifyToken(storedToken)) {
+
+                  
+              // } else {
+              //   // Redirect to login or show an error message
+              //   console.log('Access denied: Invalid or expired token');
+              //   return false;
+              // }
+
+
 
         // // Assuming getDB() is a method that returns the database connection
         // const db = this.mysqliteSvc.getDB();
