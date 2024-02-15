@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
 
 @Injectable({
   providedIn: 'root'
@@ -27,13 +27,13 @@ export class HashService {
     const salt = await bcrypt.genSalt(saltRounds);
     const hash = await bcrypt.hash(rawPassword, salt);
   
-    return hash; // This hash is what you store in the database
+    return hash; 
   }
 
   async verifyPassword(password: string, storedHash: string): Promise<boolean> {
     console.log(password, storedHash)
     const isMatch = await bcrypt.compare(password, storedHash);
-    return isMatch; // true if the password matches, false otherwise
+    return isMatch; 
   }
 
 }

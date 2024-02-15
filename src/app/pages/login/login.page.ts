@@ -4,8 +4,6 @@ import { UtilService } from 'src/app/services/util.service';
 import { User } from 'src/app/interfaces/user.model';
 import { TranslationService } from 'src/app/services/translate.service';
 import { UserService } from 'src/app/services/user.service';
-import { JwtService } from 'src/app/services/jwt.service';
-import { catchError, firstValueFrom, map } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -26,9 +24,9 @@ export class LoginPage implements OnInit{
 
   constructor(
     private userSvc:  UserService,
-    private utilsSvc: UtilService,
     private translationSvc:  TranslationService,
-    private jwtSvc: JwtService
+    private utilsSvc: UtilService,
+    private changeDetectorRef: ChangeDetectorRef 
   ) {
     this.translationSvc.setLanguage('es').subscribe();
   }
@@ -43,10 +41,12 @@ export class LoginPage implements OnInit{
   onUserList(): Promise<boolean>{
     return this.userSvc.fetchUsernames().then(usernames => {
       this.UsersList = usernames;
+      this.changeDetectorRef.detectChanges();
       return true;
     }).catch(error => {
       console.error('Error fetching usernames:', error);
-      this.UsersList = []; // Set to an empty array in case of error
+      this.UsersList = []; 
+      this.changeDetectorRef.detectChanges();
       return false;
     });
   }
@@ -66,6 +66,7 @@ export class LoginPage implements OnInit{
 
             if(isValidUser){
               
+              this.utilsSvc.routerLink('/home');
               this.logForm.reset();
               console.log('Access granted');
               return true;

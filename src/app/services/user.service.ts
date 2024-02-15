@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { User } from '../interfaces/user.model';
-import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { HashService } from './hash.service';
 import { UtilService } from './util.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,31 +17,60 @@ export class UserService {
   public UsersList! : string[];
 
   private user!: User;
-  private readonly jwtSecret = 'yourSecretKey';
   
   private listaUsuarios = new BehaviorSubject<User[]>([]);
 
-  private baseUrl = 'http://localhost:3000'; 
+  // private baseUrl = 'https://10.0.2.2:3000'; 
 
   constructor( 
 
     private hashSvc: HashService,
     private utilsSvc: UtilService,
-    private http: HttpClient
+    private authSvc: AuthService
   
   ) { }
 
-  // Send user data to the Node.js server for registration
-  registerUserHTTP(userData: User): Observable<any> {
-    return this.http.post(`${this.baseUrl}/singin`, userData);
+  // ALGO MAS PARECIDO AL LO QUE SERIA REGISTRAR CON TOKENS REALES
+
+  // // Send user data to the Node.js server for registration
+  // registerUserHTTP(userData: User): Observable<any> {
+  //   return this.http.post(`${this.baseUrl}/singin`, userData);
+  // }
+
+  // // Send login credentials to the Node.js server
+  // loginUserHTTP(username: string, password: string): Observable<any> {
+  //   return this.http.post(`${this.baseUrl}/login`, { username, password });
+  // }
+
+  // SIMUACIÓN DEL LOGIN Y REGISTRO DE USUARIOS CON EL SERVICIO
+
+  async registerUser(userData: User) {
+    
+    const result = this.authSvc.register(userData.userName, userData.password);
+    result.subscribe({
+      next: (response) => {
+        console.log(response.message);
+        this.LoggedUser = true;
+        this.fetchUsuarios(); 
+      },
+      error: (error) => console.error(error)
+    });
   }
 
-  // Send login credentials to the Node.js server
-  loginUserHTTP(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/login`, { username, password });
+  async loginUser(userData: User) {
+    
+    const result = this.authSvc.login(userData.userName, userData.password);
+    result.subscribe({
+      next: (response) => {
+        console.log('Login successful', response.token);
+        this.LoggedUser = true;
+        this.lastUser = userData;
+      },
+      error: (error) => console.error('Login failed', error)
+    });
   }
 
-    // Función que crea las tablas correspondientes a los usuarios
+  // Función que crea las tablas correspondientes a los usuarios
 
   async createUserTables(db: SQLiteDBConnection):Promise<boolean>{
 
@@ -96,6 +125,8 @@ export class UserService {
         provincia: provincia
       }
 
+      const response = await this.registerUser(this.lastUser)
+
       return true; // Success in adding the user
 
     } catch (error) {
@@ -121,7 +152,7 @@ export class UserService {
                 name: result.values[0].name,
                 surname: result.values[0].surname,
                 gender: result.values[0].gender,
-                password: result.values[0].password, // Be cautious with password handling
+                password: result.values[0].password, // Cuidao con las password
                 country: result.values[0].country,
                 ccaa: result.values[0].ccaa,
                 provincia: result.values[0].provincia
@@ -172,9 +203,11 @@ export class UserService {
       const result = await this.db.query(`SELECT password FROM Usuarios WHERE userName = ? LIMIT 1`, [username]);
 
       if (result.values && result.values.length > 0) {
-          const storedHash = result.values[0].password;
-          const isMatch = await this.hashSvc.verifyPassword(submittedPassword, storedHash);
-          return isMatch;
+        console.log('Contraseñas encontradas');
+        const storedHash = result.values[0].password;
+        const isMatch = await this.hashSvc.verifyPassword(submittedPassword, storedHash);
+        console.log(isMatch);
+        return isMatch;
       } else {
           // User not found
           return false;
@@ -192,7 +225,7 @@ export class UserService {
     try {
 
         const user = await this.getUserByUserName(userName)
-        console.log('Usuario encontrado: ', user.userName);
+        console.log('Usuario encontrado: ', JSON.stringify(user));
 
         if( user != null || user != undefined){
             // User Match
@@ -200,21 +233,28 @@ export class UserService {
             if (await this.verifyUserPassword(userName, rawPassword)) {
                 // Passwords match
 
-                const response = await firstValueFrom(this.loginUserHTTP(userName, rawPassword));
-    
+                /* const response = await firstValueFrom(this.loginUserHTTP(userName, rawPassword)); */
+
+                const response = await this.loginUser(user);
+                console.log('Usuario encontrado, respuesta http: ', response);
+                return true
+
+                /* Esto seria una aproximacion mas real?    
                 if (response && response.token) {
-                  // If the server returns a token, login is successful
-                  localStorage.setItem('jwtToken', response.token);
+
+                  // El servidor devuelve un token correcto (en este caso la validación de usuario se hace aqui, pero idealmente el servidor devuelve si las credenciales son correctas en el token)
+                  // localStorage.setItem('jwtToken', response.token); 
                   this.LoggedUser = true;
                   this.lastUser = user;
                   this.utilsSvc.routerLink('/home'); 
                   console.log('Login successful:', response);
                   return true;
                 } else {
-                  // Handle login failure (e.g., wrong credentials)
+                  
                   console.log("Login failed");
                   return false;
-                }
+                } 
+                */
 
             } else {
                 // Passwords do not match
@@ -232,7 +272,7 @@ export class UserService {
 
     } catch (error) {
         this.utilsSvc.presentToast("Error checking login status");
-        console.error('Error checking login status:', error);
+        console.error('Error checking login status:', JSON.stringify(error));
         return false; 
     } 
   }
