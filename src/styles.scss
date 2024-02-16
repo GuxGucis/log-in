@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+ion-popover {
+    ion-list {
+      max-height: 90vh; // Adjust to suitable value
+      overflow-y: auto;
+    }
+}
+
+

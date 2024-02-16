@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -9,7 +9,12 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MySqlite } from './services/mysqlite.service';
 import { PipesModule } from './pipes/pipes.module';
-import { FormsModule } from '@angular/forms';
+import { registerLocaleData } from '@angular/common';
+import es from '@angular/common/locales/es';
+import { HashService } from './services/hash.service';
+
+registerLocaleData(es)
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +28,9 @@ import { FormsModule } from '@angular/forms';
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     MySqlite,
-    PipesModule
+    PipesModule,
+    { provide: LOCALE_ID, useValue: 'es-ES' },
+    HashService,
   ],
   bootstrap: [AppComponent],
   schemas: [

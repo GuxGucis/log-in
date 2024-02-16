@@ -1,5 +1,4 @@
-import { Component, INJECTOR, Input } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { Component, Input } from '@angular/core';
 import { TranslationService } from 'src/app/services/translate.service';
 
 @Component({

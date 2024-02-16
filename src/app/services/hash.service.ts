@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
-import * as forge from  'node-forge';
+
+import bcrypt from 'bcryptjs';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class HashService {
 
-  constructor() { }
+  constructor(
+    
+  ) { }
 
-  HashingPassword(rawPassword: string){
+  async HashingPassword(rawPassword: string): Promise<string> {
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(rawPassword, salt);
   
-    const md = forge.md.sha256.create();
-    md.update(rawPassword);
-    const hashedPassword = md.digest().toHex();
-    return hashedPassword;
+    return hash; 
+  }
 
+  async verifyPassword(password: string, storedHash: string): Promise<boolean> {
+    console.log(password, storedHash)
+    const isMatch = await bcrypt.compare(password, storedHash);
+    return isMatch; 
   }
 
 }

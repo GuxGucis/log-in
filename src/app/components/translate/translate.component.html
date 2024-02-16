@@ -1,0 +1,10 @@
+<app-header>
+  <!-- Language Selection Dropdown -->
+  <ion-buttons slot="end">
+    <ion-select [(ngModel)]="selectedLanguage" (ionChange)="switchLanguage($event.detail.value)" interface="popover">
+      <ion-select-option value="es">Español</ion-select-option>
+      <ion-select-option value="en">English</ion-select-option>
+    </ion-select>
+  </ion-buttons>
+</app-header>
+

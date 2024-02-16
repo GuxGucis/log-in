@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">log-in</string>
     <string name="title_activity_main">log-in</string>
-    <string name="package_name">com.jeep.app.ionic7.angular.sqlite</string>
-    <string name="custom_url_scheme">com.jeep.app.ionic7.angular.sqlite</string>
+    <string name="package_name">com.example.app</string>
+    <string name="custom_url_scheme">com.example.app</string>
 </resources>

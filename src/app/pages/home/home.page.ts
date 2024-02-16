@@ -1,5 +1,5 @@
-import { Component} from '@angular/core';
-import { MySqlite } from 'src/app/services/mysqlite.service';
+import { Component, OnInit} from '@angular/core';
+import { UserService } from 'src/app/services/user.service';
 import { UtilService } from 'src/app/services/util.service';
 
 @Component({
@@ -7,19 +7,21 @@ import { UtilService } from 'src/app/services/util.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
-  // user = this.utilsSvc.getElementInLocalStorage('user').userName
+  userName: string | undefined;
 
   constructor(
     private utilsSvc: UtilService,
-    private sqliteSvc: MySqlite
+    private userSvc: UserService
   ) { }
 
-  userName = this.sqliteSvc.getLastUser()?.userName
+  ngOnInit(): void {
+    this.userName = this.userSvc.getLastUser()?.userName
+  }
 
-  singOut(){
-    this.utilsSvc.presentAlert({
+  singOut(): Promise<void>{
+    return this.utilsSvc.presentAlert({
       header: 'Cerrar sesión',
       message: '¿Seguro que deseas cerrar sesión?',
       buttons: [
@@ -29,12 +31,12 @@ export class HomePage {
         }, {
           text: 'Si, cerrar',
           handler: () => {
-            this.sqliteSvc.LoggedUser = false,
-            this.utilsSvc.routerLink('/login');
+            this.userSvc.setLoggedUser(false),
+              this.utilsSvc.routerLink('/login');
           }
         }
       ]
-    })
+    });
   }
 
 }

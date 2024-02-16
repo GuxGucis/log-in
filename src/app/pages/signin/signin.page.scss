@@ -1,26 +1,11 @@
 ion-card {
-    margin-top: 150px;
+    margin-top: 20px;
     background-color: var(--ion-color-primary-contrast);
     border: solid;
     border-color: #1e1e1e;
     padding: 10px;
 }
 
-.input{
-    margin-top: 20px;
-}
-
-.input-field {
-    background: transparent;
-    border: solid 1.5px rgba(122, 122, 122, 0.726);
-    margin-bottom: 20px;
-    border-radius: 4px;
-    font: 1.5em;
-}
-
-.prompt-text{
-    color: #1e1e1e;
-}
   
 ion-button {
     height: fit-content;

@@ -1,0 +1,48 @@
+
+<!-- ------------------------- TEXT INPUT ------------------------- -->
+
+<div *ngIf="intype === 'text'" class="input">
+
+  <ion-label class="prompt-text" position="stacked">{{label}}
+    <ion-text *ngIf="required" color="danger">*</ion-text>
+    <ion-text *ngIf="!required">(optional)</ion-text>
+  </ion-label>
+  <br><br>
+  <ion-input class="input-field" [formControl]="control" [type]="type" ></ion-input>
+
+</div>
+
+<!-- ------------------------- SELECT INPUT ------------------------- -->
+
+<div *ngIf="intype === 'select'">
+
+  <ion-label class="prompt-text" position="stacked">{{label}}
+    <ion-text *ngIf="required" color="danger">*</ion-text>
+    <ion-text *ngIf="!required">(optional)</ion-text>
+  </ion-label>
+
+  <ion-list class="select">
+    <ion-select [formControl]="control" interface="popover" placeholder="Select {{type}}">
+      <ion-select-option *ngFor="let item of SelectList" >{{item}}</ion-select-option>
+    </ion-select>
+  </ion-list>  
+
+</div>
+
+<!-- ------------------------- CHECKBOX INPUT ------------------------- -->
+<div *ngIf="intype === 'checkbox'">
+
+  <ion-label *ngIf="label" class="prompt-text" position="stacked">{{label}}
+    <ion-text *ngIf="required" color="danger">*</ion-text>
+    <ion-text *ngIf="!required">(optional)</ion-text>
+  </ion-label>
+
+  <br><br>
+
+  <ion-list *ngFor="let option of CheckboxOptions; let i = index">
+    <input type="checkbox" class="ui-checkbox" 
+          [checked]="control.value === option" (click)="onCheckboxClick(option)">
+      <ion-label> {{option}}</ion-label>
+  </ion-list>
+
+</div>
