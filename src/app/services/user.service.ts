@@ -20,8 +20,6 @@ export class UserService {
   
   private listaUsuarios = new BehaviorSubject<User[]>([]);
 
-  // private baseUrl = 'https://10.0.2.2:3000'; 
-
   constructor( 
 
     private hashSvc: HashService,
@@ -29,18 +27,6 @@ export class UserService {
     private authSvc: AuthService
   
   ) { }
-
-  // ALGO MAS PARECIDO AL LO QUE SERIA REGISTRAR CON TOKENS REALES
-
-  // // Send user data to the Node.js server for registration
-  // registerUserHTTP(userData: User): Observable<any> {
-  //   return this.http.post(`${this.baseUrl}/singin`, userData);
-  // }
-
-  // // Send login credentials to the Node.js server
-  // loginUserHTTP(username: string, password: string): Observable<any> {
-  //   return this.http.post(`${this.baseUrl}/login`, { username, password });
-  // }
 
   // SIMUACIÓN DEL LOGIN Y REGISTRO DE USUARIOS CON EL SERVICIO
 
@@ -233,28 +219,9 @@ export class UserService {
             if (await this.verifyUserPassword(userName, rawPassword)) {
                 // Passwords match
 
-                /* const response = await firstValueFrom(this.loginUserHTTP(userName, rawPassword)); */
-
                 const response = await this.loginUser(user);
                 console.log('Usuario encontrado, respuesta http: ', response);
                 return true
-
-                /* Esto seria una aproximacion mas real?    
-                if (response && response.token) {
-
-                  // El servidor devuelve un token correcto (en este caso la validación de usuario se hace aqui, pero idealmente el servidor devuelve si las credenciales son correctas en el token)
-                  // localStorage.setItem('jwtToken', response.token); 
-                  this.LoggedUser = true;
-                  this.lastUser = user;
-                  this.utilsSvc.routerLink('/home'); 
-                  console.log('Login successful:', response);
-                  return true;
-                } else {
-                  
-                  console.log("Login failed");
-                  return false;
-                } 
-                */
 
             } else {
                 // Passwords do not match

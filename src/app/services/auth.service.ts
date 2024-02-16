@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { UserToken } from '../interfaces/userToken.model';
 
 @Injectable({
@@ -11,7 +11,7 @@ export class AuthService {
 
   constructor() { }
 
-  login(username: string, password: string) {
+  login(username: string, password: string){
     const user = this.users.find(user => user.userName === username && user.password === password);
     if (user) {
       const simulatedToken = `simulatedTokenFor-${username}`;
