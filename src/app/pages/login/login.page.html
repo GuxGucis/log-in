@@ -1,43 +1,31 @@
-<ion-content>
-    
+<ion-content class="ion-padding">
+   
   <app-header title="Log In" type="login"></app-header>
 
-  <ion-row>
-    <ion-col sizeLg="4" sizeMd="3" sizeSm="2" size="12"></ion-col>
+  <div class="login-header">
+    <h1>Loging</h1>
+    <p>select your email and enter password</p>
+  </div>
 
-    <ion-col sizeLg="4" sizeMd="6" sizeSm="8" size="12">
-      <ion-card>
-        <form [formGroup]="logForm" (ngSubmit)="isUserLoggedIn()">
-          <div>
+  <ion-list>
 
-            <!-- <div class="input">
-              <ion-label class="prompt-text" position="stacked">{{ 'UserName' | translate | async }}</ion-label>
-              <br><br>
-              <ion-input type="text" class="input-field" formControlName="userName"></ion-input>
-              <div class="validators" *ngIf="logForm.controls.userName.errors && logForm.controls.userName.dirty">
-                <div *ngIf="logForm.controls.userName.errors?.['required']">{{ 'UserNameError1' |  translate | async }}</div>  
-              </div>
-            </div> -->
+    <form [formGroup]="logForm" (ngSubmit)="isUserLoggedIn()">
 
-            <app-input [control]="logForm.controls.userName" intype="select" label="{{ 'UserName' | translate | async }}" 
-                        [SelectList]="UsersList" type="User" [required]="true" (click)="onUserList()"></app-input>
+      <app-input
+        [control]="logForm.controls.email" intype="select" label="{{ 'UserName' | translate | async }}" 
+        [SelectList]="UsersList" type="User" [required]="true" (click)="onUserList()">
+      </app-input>
 
-            <div class="input">
-              <ion-label class="prompt-text" position="stacked">{{ 'Password' | translate | async }}</ion-label>
-              <br><br>
-              <ion-input type="password" class="input-field" formControlName="password"></ion-input>
-              <div class="validators" *ngIf="logForm.controls.password.errors && logForm.controls.password.dirty">
-                <div *ngIf="logForm.controls .password.errors?.['required']">{{ 'PasswordError1' | translate | async }}</div>
-              </div> 
-            </div>
+      <app-input
+        [control]="logForm.controls.password" intype="text" label="{{ 'Password' | translate | async }}" 
+        type="Password" [required]="true">
+      </app-input>
 
-            <ion-button [disabled]="logForm.invalid" type="submit">{{ 'Enter' | translate | async }}</ion-button>
-          </div>
-        </form>
-        <ion-button routerLink="/signin" type="button">{{ 'Register' | translate | async }}</ion-button>
-      </ion-card>
-    </ion-col>
 
-    <ion-col sizeLg="4" sizeMd="3" sizeSm="2" size="12"></ion-col>
-  </ion-row>
+
+  <ion-button [disabled]="logForm.invalid" type="submit" expand="block">{{ 'Enter' | translate | async }}</ion-button>
+  <p class="signup-text">Don't have an account? <a href="#"  routerLink="/signin" type="button">{{ 'Register' | translate | async }}</a></p>
+</form>
+
+</ion-list>
 </ion-content>

@@ -60,14 +60,4 @@ export class MySqlite {
         }
     }
 
-    // Devuelve la Base de Datos
-
-    getDB(): Promise<SQLiteDBConnection>{
-        if (!this.db) {
-            this.initializeDB();
-            return this.db;
-        }
-        return Promise.resolve(this.db);
-    }
-
 } 

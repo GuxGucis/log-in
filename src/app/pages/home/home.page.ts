@@ -32,7 +32,7 @@ export class HomePage implements OnInit {
           text: 'Si, cerrar',
           handler: () => {
             this.userSvc.setLoggedUser(false),
-              this.utilsSvc.routerLink('/login');
+            this.utilsSvc.routerLink('/login');
           }
         }
       ]

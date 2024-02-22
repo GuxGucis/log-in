@@ -65,7 +65,7 @@ export class UserService {
                                 id INTEGER PRIMARY KEY autoincrement, 
                                 userName TEXT UNIQUE NOT NULL,
                                 email  TEXT UNIQUE NOT NULL,
-                                phone INTEGER,
+                                phone TEXT,
                                 name TEXT NOT NULL,
                                 surname TEXT NOT NULL,
                                 gender TEXT NOT NULL,
@@ -89,7 +89,7 @@ export class UserService {
 
   //Añadir un usuario NUEVO
 
-  async StorageUser(userName: string, email: string, phone: number, name: string, surname: string, gender: string, 
+  async StorageUser(userName: string, email: string, phone: string, name: string, surname: string, gender: string, 
                     Password: string, country: string, ccaa?: string, provincia?: string): Promise<boolean> {
     try {
 
@@ -128,6 +128,42 @@ export class UserService {
     try{
 
         const result = await this.db.query(`SELECT * FROM Usuarios WHERE userName = ?`, [userName]);
+        if (result.values && result.values.length > 0) {
+
+            this.user = {
+                id: result.values[0].id,
+                userName: result.values[0].userName,
+                email: result.values[0].email,
+                phone: result.values[0].phone,
+                name: result.values[0].name,
+                surname: result.values[0].surname,
+                gender: result.values[0].gender,
+                password: result.values[0].password, // Cuidao con las password
+                country: result.values[0].country,
+                ccaa: result.values[0].ccaa,
+                provincia: result.values[0].provincia
+            };
+            return this.user;
+
+        } else {
+          console.log('Usuario no encontrado');
+          return this.user;
+        }
+
+    }catch(error){
+      this.utilsSvc.presentToast("Error al buscar el usuario");
+      console.log('Error al buscar el usuario');
+      return this.user;
+    }
+  }
+
+  // Busca y devuelve si exite el usuario por Email o devuelve False
+
+  async getUserByEmail(email: string): Promise<User>{
+    try{
+
+
+        const result = await this.db.query(`SELECT * FROM Usuarios WHERE email = ?`, [email]);
         if (result.values && result.values.length > 0) {
 
             this.user = {
@@ -207,20 +243,20 @@ export class UserService {
 
   // Devulve si el usuario esta logeado (existe en la BBDD)
     
-  async isUserLoggedIn(userName: string, rawPassword: string): Promise<boolean> {
+  async isUserLoggedIn(email: string, rawPassword: string): Promise<boolean> {
     try {
 
-        const user = await this.getUserByUserName(userName)
+        const user = await this.getUserByEmail(email)
         console.log('Usuario encontrado: ', JSON.stringify(user));
 
         if( user != null || user != undefined){
             // User Match
 
-            if (await this.verifyUserPassword(userName, rawPassword)) {
+            if (await this.verifyUserPassword(user.userName, rawPassword)) {
                 // Passwords match
 
                 const response = await this.loginUser(user);
-                console.log('Usuario encontrado, respuesta http: ', response);
+                console.log('Usuario encontrado', response);
                 return true
 
             } else {
@@ -244,12 +280,12 @@ export class UserService {
     } 
   }
 
-  async fetchUsernames(): Promise<string[]> {
+  async fetchUsers(): Promise<string[]> {
     try {
-      const result = await this.db.query(`SELECT userName FROM Usuarios`);
+      const result = await this.db.query(`SELECT email FROM Usuarios`);
       if (result.values) {
-        const usernames = result.values.map(user => user.userName);
-        return usernames;
+        const emails = result.values.map(user => user.email);
+        return emails;
       } else {
         return [];
       }
@@ -257,10 +293,6 @@ export class UserService {
       console.log('Lista vacia');
       return []; 
     }
-  }
-
-  async getUsernames(): Promise<string[]> {
-    return await this.fetchUsernames();
   }  
 
   getLastUser(){

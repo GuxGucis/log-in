@@ -7,6 +7,7 @@ import { UserService } from 'src/app/services/user.service';
 import { UtilService } from 'src/app/services/util.service';
 import { ValidatorsService } from 'src/app/services/validators.service';
 import DataEs from '../../../assets/formDataEs.json';
+import { HttpService } from 'src/app/services/http.service';
 
 const data: formData = DataEs as formData;
 
@@ -22,15 +23,15 @@ export class SigninPage implements OnInit{
   comunidadAutonoma = data.Region;
   genders = data.Gender
   provincia! : string[];
-
   HashPass!: string;
+  cc!: string;
 
   singForm = new FormGroup({
     userName: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, 
                                 Validators.email
                                 ]),   
-    phone: new FormControl(null, [this.validatorSvc.AllNumericValidator()]),
+    phone: new FormControl('', [this.validatorSvc.AllNumericValidator()]),
     name: new FormControl('', [Validators.required]),
     surname: new FormControl('', [Validators.required]),
     gender: new FormControl('', [Validators.required]),
@@ -50,7 +51,8 @@ export class SigninPage implements OnInit{
     private userSvc: UserService,
     private utilsSvc: UtilService,
     private hashSvc: HashService,
-    private validatorSvc: ValidatorsService
+    private validatorSvc: ValidatorsService,
+    private authHTTP: HttpService
   ) { }
 
   ngOnInit(): void {
@@ -60,8 +62,9 @@ export class SigninPage implements OnInit{
         this.singForm.get('comunidadAutonoma')?.enable();
       } else {
         this.singForm.get('comunidadAutonoma')?.disable();
-      }
+      };
     });
+
 
     this.singForm.get('comunidadAutonoma')?.valueChanges.subscribe( selectedCCAA => {
       if(selectedCCAA){
@@ -77,7 +80,7 @@ export class SigninPage implements OnInit{
     this.singForm.get('gender')?.setValue(selectedGender);
   }
  
-  async Submit(userName: string, email: string, phone: number, name: string, surname: string, gender: string,
+  async Submit(userName: string, email: string, phone: string, name: string, surname: string, gender: string,
                  password: string, country: string, ccaa?: string, provincia?: string): Promise<boolean> {
     
     this.HashPass = await this.hashSvc.HashingPassword(password);
@@ -99,6 +102,12 @@ export class SigninPage implements OnInit{
     if(await this.userSvc.StorageUser(user.userName, user.email, user.phone, user.name, user.surname, 
                               user.gender, user.password, user.country, user.ccaa, user.provincia)){
 
+      // this.authHTTP.registerHTTP({email: user.email, password: user.password}).subscribe({
+      this.authHTTP.registerHTTP().subscribe({
+        next: (response) => {console.log('Registration successful', response);},
+        error: (error) => {console.error('Registration failed', error);}
+      })
+
       console.log('Usuario logeado', this.userSvc.lastUser);
       this.utilsSvc.routerLink('/home');
       this.singForm.reset()
@@ -118,7 +127,7 @@ export class SigninPage implements OnInit{
       
     const userName = this.singForm.value.userName ?? '';
     const email = this.singForm.value.email ?? '';
-    const phone = this.singForm.value.phone ? Number(this.singForm.value.phone) : 0;
+    const phone = this.singForm.value.phone ?? '';
     const name = this.singForm.value.name ?? '';
     const surname = this.singForm.value.surname ?? '';
     const gender = this.singForm.value.gender ?? '';

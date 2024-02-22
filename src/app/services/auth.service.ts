@@ -7,9 +7,14 @@ import { UserToken } from '../interfaces/userToken.model';
 })
 export class AuthService {
 
-  public users: UserToken[] = [];
+  constructor( ) { }
 
-  constructor() { }
+  /*
+  ********************* USO SIMULADO DE LA APP ( SIN CONEXIÓN REAL CON SERVER ) **************************
+  * Pero permite registro real de usuario, dado que se almecenan en el servicio
+  */
+
+  public users: UserToken[] = [];
 
   login(username: string, password: string){
     const user = this.users.find(user => user.userName === username && user.password === password);

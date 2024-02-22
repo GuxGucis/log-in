@@ -4,6 +4,7 @@ import { UtilService } from 'src/app/services/util.service';
 import { User } from 'src/app/interfaces/user.model';
 import { TranslationService } from 'src/app/services/translate.service';
 import { UserService } from 'src/app/services/user.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginPage implements OnInit{
   UsersList!: string[];
 
   logForm = new FormGroup({
-    userName: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
   })
 
@@ -26,7 +27,8 @@ export class LoginPage implements OnInit{
     private userSvc:  UserService,
     private translationSvc:  TranslationService,
     private utilsSvc: UtilService,
-    private changeDetectorRef: ChangeDetectorRef 
+    private changeDetectorRef: ChangeDetectorRef,
+    private authHTTP: HttpService
   ) {
     this.translationSvc.setLanguage('es').subscribe();
   }
@@ -40,8 +42,8 @@ export class LoginPage implements OnInit{
 
   async onUserList(): Promise<boolean>{
     try {
-      const usernames = await this.userSvc.fetchUsernames();
-      this.UsersList = usernames;
+      const emails = await this.userSvc.fetchUsers();
+      this.UsersList = emails;
       this.changeDetectorRef.detectChanges();
       return true;
     } catch (error) {
@@ -58,39 +60,45 @@ export class LoginPage implements OnInit{
 
   async isUserLoggedIn(): Promise<boolean>{
     try {
+      if(this.logForm.value.email != null && this.logForm.value.password != null){
+      
+        const isValidUser  = await this.userSvc.isUserLoggedIn(this.logForm.value.email, this.logForm.value.password);
 
-        if(this.logForm.value.userName != null){
-        
-          if(this.logForm.value.password != null){
+        if(isValidUser && this.userSvc.lastUser?.email && this.userSvc.lastUser?.password){
 
-            const isValidUser  = await this.userSvc.isUserLoggedIn(this.logForm.value.userName, this.logForm.value.password);
-
-            if(isValidUser){
-              
+          console.log(isValidUser);
+            
+          let exito = false;
+          this.authHTTP.loginHTTP().subscribe({
+            next: (response) => {
+              console.log('Login successful HTTP', response);
               this.utilsSvc.routerLink('/home');
               this.logForm.reset();
               console.log('Access granted');
-              return true;
-                    
-            }else{
-              this.logForm.reset();
-              console.log("NO se ha podido iniciar sesión");
-              return false;
+              exito = true;
+            },
+            error: (error) => {
+              console.error('Login failed', error);
+              exito = false
             }
+          });
 
-          }else{
-            console.log('Error en el log de Usuario');
-            return false;
-          }
+          return exito;
 
         }else{
-          console.log('Error el formulario no es válido', this.logForm.value.userName);
+          this.logForm.reset();
+          console.log("NO se ha podido iniciar sesión");
           return false;
         }
 
+      }else{
+        console.log('Error el formulario no es válido', this.logForm.value.email);
+        return false;
+      }
+
     } catch (error) {
         console.error('Error checking login status:', error);
-        return false; // In case of error, return false or handle accordingly
+        return false; 
     }
   }
 

@@ -10,10 +10,17 @@
       <ion-buttons *ngIf="translation !== false" slot="end">
         <ion-item lines="none">
           <ion-select [(ngModel)]="selectedLanguage" (ionChange)="switchLanguage($event.detail.value)">
-            <ion-select-option value="es">Español</ion-select-option>
-            <ion-select-option value="en">English</ion-select-option>
+            <ion-select-option value="es">Es</ion-select-option>
+            <ion-select-option value="en">En</ion-select-option>
           </ion-select>
         </ion-item>
+
+        <!-- Icon next to the toggle button -->
+        <ion-icon [name]="isDarkMode ? 'moon-outline' : 'sunny-outline'" slot="start"></ion-icon>
+
+        <!-- Toggle for dark mode -->
+        <ion-toggle mode="ios" [checked]="isDarkMode" (ionChange)="toggleTheme()"></ion-toggle>
+        
       </ion-buttons>
 
       </ion-toolbar>    

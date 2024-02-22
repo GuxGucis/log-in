@@ -1,39 +1,42 @@
 .input{
-    margin-top: 20px;
+
+  --border-color: var(--ion-color-light-contrast);
+  --placeholder-color: #666; // Adjust color as needed
+  --placeholder-font-style: italic;
+  --placeholder-opacity: 1;
+  --background: transparent;
+  font-style: italic;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 10px;
+
+  .select{
+    margin-left: 20px;
+  }
+
 }
+  // .prompt-text{
+  //   font-size: 1.5em; 
+  //   padding-bottom: 0.75em;
+  //   font-style: italic;
+  //   color: var(--ion-color-light-contrast);
+  // }
+  
+.checkboxProp{
 
-.input-field {
-    background: transparent;
-    border: solid 1.5px rgba(122, 122, 122, 0.726);
-    margin-bottom: 20px;
-    border-radius: 4px;
-    font: 1.5em;
-}
+  margin-left: 20px;
+  .prompt-text{
+    font-size: medium;
+    font-style: italic;
+  }
 
-.prompt-text{
-    color: #1e1e1e;
-}
-
-.select{
-    background-color: var(--ion-color-primary-contrast);
-}
-
-// .checkbox{
-//     background-color: var(--ion-color-primary-contrast);
-//     svg{
-//         background-color: aliceblue;
-//     }
-// }
-
-ion-list {
-    background-color: var(--ion-color-primary-contrast);
-}
-
-/* checkbox settings */
-
-.ui-checkbox {
+    /* checkbox settings */
+  
+  .ui-checkbox {
+    font-size: medium;
+    font-style: italic;
     --primary-color: #1677ff;
-    --secondary-color: #fff;
+    --secondary-color: #e9e9e9;
     --primary-hover-color: #4096ff;
     /* checkbox */
     --checkbox-diameter: 20px;
@@ -60,7 +63,7 @@ ion-list {
     width: var(--checkbox-diameter);
     height: var(--checkbox-diameter);
     border-radius: var(--checkbox-border-radius);
-    background: var(--secondary-color);
+    background: transparent;
     border: var(--checkbox-border-width) var(--checkbox-border-style) var(--checkbox-border-color);
     -webkit-transition: all 0.3s;
     -o-transition: all 0.3s;
@@ -132,3 +135,18 @@ ion-list {
     transition: none;
     opacity: 1;
   }
+} 
+
+  
+::ng-deep .mycomponent-wider-popover{
+  --width: 95%;
+  --max-width: 400px;
+  }
+
+// .input-field { 
+//   background: transparent;
+//   border: solid 1.5px rgba(122, 122, 122, 0.726);
+//   margin-bottom: 20px;
+//   border-radius: 4px;
+//   font: 1.5em;
+// }

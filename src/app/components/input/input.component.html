@@ -1,22 +1,21 @@
 
 <!-- ------------------------- TEXT INPUT ------------------------- -->
 
-<div *ngIf="intype === 'text'" class="input">
+<ion-item *ngIf="intype === 'text'" class="input">
 
-  <ion-label class="prompt-text" position="stacked">{{label}}
-    <ion-text *ngIf="required" color="danger">*</ion-text>
-    <ion-text *ngIf="!required">(optional)</ion-text>
-  </ion-label>
-  <br><br>
-  <ion-input class="input-field" [formControl]="control" [type]="type" ></ion-input>
+  <ion-input 
+    label="{{label}}{{required ? '*' : '(optional)'}}" labelPlacement="floating"
+    aria-label="text" class="input-field" 
+    [formControl]="control" [type]="type" class="labeltxt"
+  ></ion-input>
 
-</div>
+</ion-item>
 
 <!-- ------------------------- SELECT INPUT ------------------------- -->
 
-<div *ngIf="intype === 'select'">
+<div *ngIf="intype === 'select'" class="input">
 
-  <ion-label class="prompt-text" position="stacked">{{label}}
+  <ion-label class="select" position="stacked">{{label}}
     <ion-text *ngIf="required" color="danger">*</ion-text>
     <ion-text *ngIf="!required">(optional)</ion-text>
   </ion-label>
@@ -30,17 +29,15 @@
 </div>
 
 <!-- ------------------------- CHECKBOX INPUT ------------------------- -->
-<div *ngIf="intype === 'checkbox'">
+<div *ngIf="intype === 'checkbox'" class="checkboxProp">
 
-  <ion-label *ngIf="label" class="prompt-text" position="stacked">{{label}}
+  <ion-label class="prompt-text" position="stacked">{{label}}
     <ion-text *ngIf="required" color="danger">*</ion-text>
     <ion-text *ngIf="!required">(optional)</ion-text>
   </ion-label>
 
-  <br><br>
-
   <ion-list *ngFor="let option of CheckboxOptions; let i = index">
-    <input type="checkbox" class="ui-checkbox" 
+    <input aria-label="CheckboxOptions" type="checkbox" class="ui-checkbox" 
           [checked]="control.value === option" (click)="onCheckboxClick(option)">
       <ion-label> {{option}}</ion-label>
   </ion-list>
